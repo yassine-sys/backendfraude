@@ -1,13 +1,13 @@
 package com.example.backend.Controllers;
 
-import com.example.backend.entities.Group;
+import com.example.backend.entities.Module;
+import com.example.backend.entities.SubModule;
 import com.example.backend.services.ModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.backend.entities.Module;
 
 import java.util.List;
 
@@ -54,5 +54,8 @@ public class ModuleController {
     public List<Module> findModuleByGroup(@PathVariable Long Id){
         return moduleService.findModuleByGroup(Id);
     }
-
+    @GetMapping("/{moduleId}/submodules")
+    public List<SubModule> getSubmodulesForModule(@PathVariable Long moduleId) {
+        return moduleService.getSubmodulesForModule(moduleId);
+    }
 }

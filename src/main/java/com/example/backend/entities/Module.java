@@ -1,16 +1,14 @@
 package com.example.backend.entities;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity(name = "module")
-@Table(schema = "management")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "id")
+@Table(schema = "fraudemangement")
+@JsonIdentityInfo(scope = Module.class,resolver = EntityIdResolver.class,generator = ObjectIdGenerators.PropertyGenerator.class,property = "id")
 @JsonIgnoreProperties({"group_module"})
 public class Module implements Serializable {
 
@@ -20,11 +18,12 @@ public class Module implements Serializable {
 
     private String moduleName;
 
-    @OneToMany(mappedBy = "Module", fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.PERSIST ,CascadeType.MERGE})
-    @JsonManagedReference
+    @OneToMany(mappedBy = "Module", cascade = { CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH })
+  //  @JsonManagedReference
+   // @JsonIgnore
     private List<SubModule> list_sub_modules;
 
-    @ManyToMany(mappedBy = "module_groups", fetch = FetchType.LAZY,cascade = { CascadeType.DETACH, CascadeType.PERSIST ,CascadeType.MERGE})
+    @ManyToMany(mappedBy = "module_groups", fetch = FetchType.LAZY,cascade = { CascadeType.DETACH, CascadeType.PERSIST, CascadeType.MERGE ,CascadeType.REMOVE})
     @JsonIgnore
     private List<Group> group_module;
 

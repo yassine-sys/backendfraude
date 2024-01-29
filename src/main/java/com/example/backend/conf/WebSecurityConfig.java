@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,10 +18,7 @@ import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import javax.annotation.Resource;
-
 @Configuration
-@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan(basePackages = "com.example.backend")
 @CrossOrigin("*")
@@ -51,17 +47,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationFilter();
     }
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
                 authorizeRequests()
-                .antMatchers("/*","/user/add/","/user/delete/*","/token/*","/user/*","/user","/group","/group/*","/group/delete/*","/group/edit/*","/group/add","/group/module/*","/module/*","/module/delete/*","/module","/module/edit/*","/submodule/*","/submodule/delete/*","/submodule/edit/*","/function/delete/*","/function/*","/function/delete/*","/function/add","/function/edit/*","/springbootwildfly","/check","/token/generate-token","/loginResp").permitAll()
+                .antMatchers("/token/**","/user/username/**","/reset-password").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
     }
+
+  /*  @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors().and().csrf().disable().
+                authorizeRequests()
+                .antMatchers("/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+    }*/
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -83,6 +92,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return  firewall;
 
     }
+
+
 
 
 }

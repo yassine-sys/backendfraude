@@ -5,11 +5,8 @@ import com.example.backend.dao.SubModuleRepository;
 import com.example.backend.entities.Group;
 import com.example.backend.entities.Module;
 import com.example.backend.entities.SubModule;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +18,7 @@ public class ModuleServiceImpl implements ModuleService {
 
     ModuleRepository moduleRepository;
     SubModuleRepository subModuleRepository;
+
     public ModuleServiceImpl (ModuleRepository moduleRepository,SubModuleRepository subModuleRepository){
         this.subModuleRepository=subModuleRepository;
         this.moduleRepository=moduleRepository;
@@ -28,11 +26,11 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     public Module addModule(Module module) {
         List<SubModule> subModules = new ArrayList<>();
-        for (SubModule subModule : module.getList_sub_modules()) {
-            SubModule existingSubModule = subModuleRepository.getOne(subModule.getId());
-            existingSubModule.setModule(module);
-            subModules.add(existingSubModule);
-        }
+//        for (SubModule subModule : module.getList_sub_modules()) {
+//            SubModule existingSubModule = subModuleRepository.getOne(subModule.getId());
+//            existingSubModule.setModule(module);
+//            subModules.add(existingSubModule);
+//        }
         module.setList_sub_modules(subModules);
         return moduleRepository.save(module);
     }
@@ -84,6 +82,11 @@ public class ModuleServiceImpl implements ModuleService {
 
     }
 
+
+
+
+
+
     @Override
     public Module findById(Long Id) {
         return moduleRepository.getOne(Id);
@@ -93,6 +96,13 @@ public class ModuleServiceImpl implements ModuleService {
     public List<Module> findModuleByGroup(Long Id) {
         return moduleRepository.findAll().stream().filter
                 (x -> x.getGroup_module().stream().anyMatch(t -> t.getgId() == Id)).collect(Collectors.toList());
+    }
+
+    public List<SubModule> getSubmodulesForModule(Long moduleId) {
+        Module module = moduleRepository.findById(moduleId).get();
+              //  .orElseThrow(() -> new NotFoundException("Module not found with id: " + moduleId));
+
+        return module.getList_sub_modules();
     }
 }
 

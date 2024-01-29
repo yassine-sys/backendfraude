@@ -1,9 +1,9 @@
 package com.example.backend.services;
 
 import com.example.backend.entities.Group;
+import com.example.backend.entities.Module;
 
 import java.util.List;
-import java.util.Optional;
 
 
 public interface GroupService {
@@ -13,9 +13,17 @@ public interface GroupService {
 
     List<Group> getListGroup() ;
     void deleteGroup(Long gId) ;
-    Optional<Group> FindGroupByFunc(Long gId) ;
 
     Group findById(Long gId);
 
     List<Group> findGroupByModule(Long Id);
+    void removeModuleFromGroup(Long groupId, Long moduleId);
+
+
+
+    List<Module> getModulesByGroup(Long groupId);
+
+
+    void assignModuleToGroup(Long groupId, Long moduleId);
+
 }
