@@ -5,6 +5,7 @@ import com.example.backend.dao.SubModuleRepository;
 import com.example.backend.entities.Group;
 import com.example.backend.entities.Module;
 import com.example.backend.entities.SubModule;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     public List<Module> getListModule() {
-        return moduleRepository.findAll();
+        return moduleRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     @Override
