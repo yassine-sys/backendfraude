@@ -95,7 +95,7 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     public List<Module> findModuleByGroup(Long Id) {
-        return moduleRepository.findAll().stream().filter
+        return moduleRepository.findAll(Sort.by(Sort.Direction.ASC, "id")).stream().filter
                 (x -> x.getGroup_module().stream().anyMatch(t -> t.getgId() == Id)).collect(Collectors.toList());
     }
 

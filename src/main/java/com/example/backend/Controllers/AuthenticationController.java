@@ -2,6 +2,7 @@ package com.example.backend.Controllers;
 
 import com.example.backend.conf.JwtTokenUtil;
 import com.example.backend.entities.*;
+import com.example.backend.entities.Module;
 import com.example.backend.services.ModuleService;
 import com.example.backend.services.PasswordResetServiceImpl;
 import com.example.backend.services.UserService;
@@ -16,10 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin("*")
@@ -94,15 +92,41 @@ public class AuthenticationController {
 
     }
 
+    private List<Module> cloneAndSortModules(List<Module> modules) {
+        List<Module> sortedModules = new ArrayList<>(modules);
 
+        // Sort modules based on their "order" field
+        sortedModules.sort(Comparator.comparingLong(Module::getId));
+
+        // Recursively sort sub-modules for each module
+        sortedModules.forEach(this::sortModule);
+
+        return sortedModules;
+    }
+    private void sortModule(Module module) {
+        // Sort sub-modules based on their "order" field
+        module.getList_sub_modules().sort(Comparator.comparingLong(SubModule::getId));
+    }
     @RequestMapping(value="/loginResp", method = RequestMethod.GET)
     @Transactional
     public User getUserData(@RequestParam(name = "token") String token) {
         final Optional<User> user = userService.findByUsername(jwtTokenUtil.extractUser(token).getUsername());
         System.out.println(user.get().getUsername());
         if(token!=null){
-            //System.out.println(moduleService.findModuleByGroup(user.get().getUser_group().getgId()));
-            return user.get();
+
+            List<Module> sortedModules = cloneAndSortModules(user.get().getUser_group().getModule_groups());
+
+            // Create a new User object with the sorted module groups
+            User sortedUser = new User();
+            sortedUser.setuId(user.get().getuId());
+            sortedUser.setUsername(user.get().getUsername());
+            sortedUser.setuMail(user.get().getuMail());
+            sortedUser.setNomUtilisateur(user.get().getNomUtilisateur());
+            sortedUser.setRole(user.get().getRole());
+            sortedUser.setUser_group(user.get().getUser_group());
+            sortedUser.getUser_group().setModule_groups(sortedModules);
+
+            return sortedUser;
         }else{
             return null;
         }
@@ -193,10 +217,18 @@ public class AuthenticationController {
                         .collect(Collectors.toList());
 
                 // Sort submodules inside each module
+                subModuleDTOs.sort(Comparator.comparing(SubModuleDTO::getId));
+
                 moduleDTO.setListSubModule(subModuleDTOs);
 
                 result.add(moduleDTO);
+
+              //  moduleDTO.setListSubModule(subModuleDTOs);
+
+              //  result.add(moduleDTO);
             }
+            result.sort(Comparator.comparing(ModuleDTO::getId));
+
         }
 
         return result;
